@@ -156,3 +156,15 @@ export async function deleteOrder(id) {
   const init = { method: 'DELETE', headers: putHeaders};
   return await fetchDataFromAPI(url, init);
 }
+
+export async function createOrder(order) {
+  const url = `${baseUrl}/orders/`;
+  const postHeaders = {
+    'Authorization': auth,
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+  const init = { method: 'POST', headers: postHeaders, body: JSON.stringify(order)};
+  return await fetchDataFromAPI(url, init);
+}

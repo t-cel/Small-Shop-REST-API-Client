@@ -10,8 +10,7 @@ import {
   } from './api';
 
 import OperationButtons from './OperationButtons';
-import ProductFilterPanel from './ProductsFilterPanel';
-import GridifyQueryBuilder from './GridifyQueryBuilder';
+import EventBus from 'eventing-bus';
 
 class ProductListItem extends React.Component {
     constructor(props) {
@@ -126,6 +125,7 @@ export default class ProductsList extends React.Component {
       this.onItemRemove = this.onItemRemove.bind(this);
       this.loadItems = this.loadItems.bind(this);
       this.onApplyFilter = this.onApplyFilter.bind(this);
+      this.filterBusEvent = undefined;
     }
   
     // on confirm button click, make a copy without our local data and update product 
@@ -156,8 +156,13 @@ export default class ProductsList extends React.Component {
     }
   
     // here we load all products from api, create images for them and save categories for later use.
-    async componentDidMount() {
+    async componentDidMount() {  
+      this.filterBusEvent = EventBus.on("applyFilterToProductsList", async (query) => await this.onApplyFilter(query));
       await this.loadItems("");
+    }
+
+    async componentWillUnmount() {
+      this.filterBusEvent(); //unregister global event
     }
     
     async loadItems(query) {
@@ -234,8 +239,12 @@ export default class ProductsList extends React.Component {
       else if(!isLoaded)
       {
         return (
-          <div className="container">
-            <div>Loading...</div>
+          <div className="container mt-5">
+            <div className="text-center">
+              <div className="spinner-border" style={{width: "4rem", height: "4rem"}} role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </div>
           </div>
         ); 
       }

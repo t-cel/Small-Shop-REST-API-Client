@@ -1,6 +1,6 @@
 import React from 'react';
-
 import GridifyQueryBuilder from './GridifyQueryBuilder';
+import EventBus from 'eventing-bus';
 
 export default class ProductsFilterPanel extends React.Component {
     constructor(props) {
@@ -90,7 +90,8 @@ export default class ProductsFilterPanel extends React.Component {
   
     async onApplyFilter() {
         if(this.validateForm()) {
-          await this.props.onApplyFilter(this.constructQuery());
+          // await this.props.onApplyFilter(this.constructQuery());
+          await EventBus.publish("applyFilterToProductsList", this.constructQuery());
         }
     }
   

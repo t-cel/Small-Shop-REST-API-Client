@@ -9,6 +9,7 @@ import OrdersList from './OrdersList';
 import ProductsList from './ProductsList';
 import ShopPanelHeader from './ShopPanelHeader';
 import NewProductForm from './NewProductForm';
+import NewOrderForm from './NewOrderForm';
 import ListSwitcher from './ListSwitcher';
 import ProductsFilterPanel from './ProductsFilterPanel';
 
@@ -38,6 +39,11 @@ class App extends React.Component {
           <ListSwitcher/>
           <ProductsFilterPanel/>
           <ProductsList/>
+        </Route>
+
+        <Route path="/orders/new">
+          <ShopPanelHeader/> 
+          <NewOrderForm/>
         </Route>
 
         <Route path="/orders">
