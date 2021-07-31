@@ -1,16 +1,14 @@
 // esupplier@mail.com esupplier
-var _username = 'esupplier@mail.com';
-var _password = 'esupplier';
 
-const getAuthHeader = () => `Basic ${Buffer.from(`${_username}:${_password}`).toString('base64')}`;
+if(!localStorage.getItem("userCredidentials"))
+  localStorage.setItem("userCredidentials", JSON.stringify({ email: "", password: "" }));
 
-const baseUrl = 'https://localhost:44302/shop_api';
-
-const headers = { 
-  'Authorization': getAuthHeader(),
-  'Access-Control-Allow-Origin': '*',
-  'Accept': 'application/json'
+const getAuthHeader = () => {
+  const userCredidentials = JSON.parse(localStorage.getItem("userCredidentials"));
+  return `Basic ${Buffer.from(`${userCredidentials.email}:${userCredidentials.password}`).toString('base64')}`;
 }
+  
+const baseUrl = 'https://localhost:44302/shop_api';
 
 const createHeaders = () => { return { 
   'Authorization': getAuthHeader(),
@@ -18,9 +16,7 @@ const createHeaders = () => { return {
   'Accept': 'application/json'
 }}
 
-function fetchedCorrectly(res) {
-  return res.status >= 200 && res.status < 300;
-}
+const fetchedCorrectly = (res) => res.status >= 200 && res.status < 300;
 
 async function fetchDataFromAPI(url, init) {
   return await fetch(url, init).then((res) => {
@@ -31,7 +27,7 @@ async function fetchDataFromAPI(url, init) {
         return null;
       }
     } else {
-      throw new Error(`Error on fetching data from API, error code: ${res.status}`);  
+      return new Error(`Error on fetching data from API, error code: ${res.status}`);  
     }
   })
   .catch((error) => console.error(error));
@@ -142,14 +138,17 @@ export async function getImage(imageURL) {
 
 export async function getUser() {
   const url = `${baseUrl}/user`;
-
   const init = { method: 'GET', headers: createHeaders() };
   return await fetchDataFromAPI(url, init);
 }
 
 export function setCredidentials(login, password) {
-  _username = login;
-  _password = password;
+  const userCredidentials = {
+    email: login, 
+    password: password
+  }
+
+  localStorage.setItem("userCredidentials", JSON.stringify(userCredidentials));
 }
 
 // ORDERS

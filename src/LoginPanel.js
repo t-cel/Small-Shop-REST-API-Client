@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, withRouter } from 'react-router-dom';
+import ShopPanelLogo from './ShopPanelLogo';
 
 import { getUser, setCredidentials } from './api'
 
@@ -26,16 +27,17 @@ function LoginPanel(props) {
         }
     }
 
-    useEffect(() => {
-        
+    useEffect(async () => {
+        const user = await getUser();
+        if(!(user instanceof Error)) {
+            props.history.push('/products');
+        }    
     })
 
     return (
         <div className="container">
             <div className="d-flex">
-                <div className="d-flex flex-row" style={{width: "80vw"}}>
-                    <h1 className="text-light"><b>Web Shop Panel - Log In</b></h1>
-                </div>
+                <ShopPanelLogo/>
             </div>
             <hr></hr>
             <div className="form-row">
