@@ -82,7 +82,7 @@ export default class NewOrderForm extends React.Component {
             const resultOrder = await createOrder(order);
             if(!resultOrder) {
                 let errors = [];
-                errors["productId"] = "Wrong id";
+                errors["post"] = "Wrong id or count exceeds available products count";
                 this.setState({
                     errors: errors
                 });
@@ -145,6 +145,7 @@ export default class NewOrderForm extends React.Component {
             </div>
             <div className="form-row mt-3">
                 <button className="btn btn-primary btn-lg btn-block" onClick={this.onAddBtnClick}>Add Order</button>
+                <div className="text-danger mt-2">{this.state.errors["post"]}</div>    
             </div>
         </div>
         );

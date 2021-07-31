@@ -7,6 +7,7 @@ import {
     updateProduct,
     getCategories,
     deleteProduct,
+    getOrders,
   } from './api';
 
 import OperationButtons from './OperationButtons';
@@ -19,10 +20,20 @@ class ProductListItem extends React.Component {
       super(props);
       this.handleChange = this.handleChange.bind(this); 
       this.state = {
-        product: this.props.product
+        product: this.props.product,
+        readonly: false
       }
     }
   
+    async componentDidMount() {
+      const queryBuilder = new GridifyQueryBuilder();
+      const query = queryBuilder.setFilterEquals("productId", this.state.product.id).build();
+      const ordersWithOurProduct = await getOrders(query);
+      if(ordersWithOurProduct.length > 0) {
+        this.setState({readonly: true});
+      }
+    }
+
     handleChange({target}) {
       const updated = this.state.product;
       updated.modified = true;
@@ -34,18 +45,22 @@ class ProductListItem extends React.Component {
     }
   
     render() {
+      const { product, readonly } = this.state;
+
       return (
         <li className="list-group-item listItem m-2">
           <div className="p-1 mb-2">
-            <b>Product Id: {this.props.product.id}</b>
+            <b>Product Id: {product.id}</b> 
+            { readonly ? (<div class="text-warning">There are pending orders for this product so it can't be modified now.</div>) : ("")}
+
             <div className="float-right">
-              <button className="btn btn-danger btn-sm" onClick={() => this.props.onItemRemove(this.props.product.id)}>Remove</button>
+              <button className="btn btn-danger btn-sm" onClick={() => this.props.onItemRemove(product.id)} disabled={readonly}>Remove</button>
             </div>
           </div>
           <div className="d-flex flex-row justify-content-between">
             <div className="d-flex">
               <div className="pictureCol">
-                <img src={this.props.product.image} className="pictmp"></img>
+                <img src={product.image} className="pictmp"></img>
               </div>
               <div className="d-flex flex-column pl-4">
                 <div className="py-1">
@@ -55,16 +70,16 @@ class ProductListItem extends React.Component {
                     type="text" 
                     onChange={this.handleChange} 
                     name="name" 
-                    defaultValue={this.props.product.name} 
-                    disabled={this.props.readonly}>
+                    defaultValue={product.name} 
+                    disabled={readonly}>
                   </input>
                 </div>
                 
                 <label htmlFor="category_dropdown">Category:</label>
                 <div className="dropdown" id="category_dropdown">
-                  <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled={this.props.readonly}>
+                  <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled={readonly}>
                     {
-                      this.props.categories[this.props.product.categoryId-1].name
+                      this.props.categories[product.categoryId-1].name
                     }
                   </button>
                   <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -75,7 +90,6 @@ class ProductListItem extends React.Component {
                     <button className="dropdown-item" onClick={this.handleChange} name="categoryId" value="5">Kitchen Accessories</button>
                   </div>
                 </div>
-                
               </div>
               <div className="d-flex flex-column pl-4">
                 <div className="py-2">
@@ -85,8 +99,8 @@ class ProductListItem extends React.Component {
                     type="text" 
                     onChange={this.handleChange} 
                     name="price" 
-                    defaultValue={this.props.product.price} 
-                    disabled={this.props.readonly}>
+                    defaultValue={product.price} 
+                    disabled={readonly}>
                   </input>
                 </div>
               </div>        
@@ -98,11 +112,11 @@ class ProductListItem extends React.Component {
                     type="text"
                     onChange={this.handleChange} 
                     name="count" 
-                    defaultValue={this.props.product.count} 
-                    disabled={this.props.readonly}>
+                    defaultValue={product.count} 
+                    disabled={readonly}>
                   </input>
                 </div>
-              </div>      
+              </div>  
             </div>
           </div>
         </li>
@@ -160,7 +174,8 @@ class ProductsList extends React.Component {
 
       const lastStrAfterSlash = window.location.href.substr(window.location.href.lastIndexOf("/")+1);
       if(!isNaN(lastStrAfterSlash)) {
-        await this.loadItems(new GridifyQueryBuilder().setFilterEquals("id", lastStrAfterSlash).build());
+        const query = new GridifyQueryBuilder().setFilterEquals("id", lastStrAfterSlash).build();
+        await this.loadItems(query);
       }
       else {
         await this.loadItems("");

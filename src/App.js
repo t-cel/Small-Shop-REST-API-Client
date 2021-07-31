@@ -13,6 +13,7 @@ import NewOrderForm from './NewOrderForm';
 import ListSwitcher from './ListSwitcher';
 import ProductsFilterPanel from './ProductsFilterPanel';
 import OrdersFilterPanel from './OrdersFilterPanel';
+import LoginPanel from './LoginPanel';
 
 class App extends React.Component {
   render(){
@@ -22,6 +23,10 @@ class App extends React.Component {
       <Switch>
         <Route exact path="/">
 
+        </Route>
+
+        <Route path="/login">
+          <LoginPanel/>
         </Route>
 
         <Route path="/products/new">

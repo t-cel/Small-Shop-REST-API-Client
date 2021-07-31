@@ -33,7 +33,7 @@ export default class ShopPanelHeader extends React.Component {
               <button className="btn btn-danger float-right btn-sm" style={{height: "50%"}}>Log Off</button>
           </div>
           <div className="pb-2 text-light">Logged as: <b>{user.name}</b></div>
-          </div>
+        </div>
         );
       }
       else {
