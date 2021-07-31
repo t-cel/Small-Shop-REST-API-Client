@@ -11,6 +11,8 @@ import {
 
 import OperationButtons from './OperationButtons';
 import EventBus from 'eventing-bus';
+import { withRouter } from 'react-router';
+import GridifyQueryBuilder from './GridifyQueryBuilder';
 
 class ProductListItem extends React.Component {
     constructor(props) {
@@ -29,8 +31,6 @@ class ProductListItem extends React.Component {
         product: updated
       });
       this.props.onAnyItemModify();
-      //console.log(this.props.product);
-      //console.log(`${target.name}: ${target.value}`);
     }
   
     render() {
@@ -110,7 +110,7 @@ class ProductListItem extends React.Component {
     }
   }
   
-export default class ProductsList extends React.Component {
+class ProductsList extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -124,7 +124,6 @@ export default class ProductsList extends React.Component {
       this.onAnyItemModify = this.onAnyItemModify.bind(this);
       this.onItemRemove = this.onItemRemove.bind(this);
       this.loadItems = this.loadItems.bind(this);
-      this.onApplyFilter = this.onApplyFilter.bind(this);
       this.filterBusEvent = undefined;
     }
   
@@ -157,8 +156,15 @@ export default class ProductsList extends React.Component {
   
     // here we load all products from api, create images for them and save categories for later use.
     async componentDidMount() {  
-      this.filterBusEvent = EventBus.on("applyFilterToProductsList", async (query) => await this.onApplyFilter(query));
-      await this.loadItems("");
+      this.filterBusEvent = EventBus.on("applyFilterToProductsList", async (query) => await this.loadItems(query));
+
+      const lastStrAfterSlash = window.location.href.substr(window.location.href.lastIndexOf("/")+1);
+      if(!isNaN(lastStrAfterSlash)) {
+        await this.loadItems(new GridifyQueryBuilder().setFilterEquals("id", lastStrAfterSlash).build());
+      }
+      else {
+        await this.loadItems("");
+      }
     }
 
     async componentWillUnmount() {
@@ -166,6 +172,11 @@ export default class ProductsList extends React.Component {
     }
     
     async loadItems(query) {
+      this.setState({
+        isLoaded: false,
+        items: []
+      });
+
       const categoriesData = await getCategories();
       if(!categoriesData)
         return;
@@ -219,14 +230,6 @@ export default class ProductsList extends React.Component {
       } 
     }
 
-    async onApplyFilter(query) {
-      this.setState({
-        isLoaded: false,
-        items: []
-      });
-      await this.loadItems(query);
-    }
-
     render() {
       const { error, isLoaded, items } = this.state;
       if(error){
@@ -264,3 +267,5 @@ export default class ProductsList extends React.Component {
       }
     }
   }
+
+  export default withRouter(ProductsList);

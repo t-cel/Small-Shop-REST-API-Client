@@ -2,13 +2,14 @@ import React from 'react';
 import GridifyQueryBuilder from './GridifyQueryBuilder';
 import EventBus from 'eventing-bus';
 
-export default class ProductsFilterPanel extends React.Component {
+export default class OrdersFilterPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             fields: {
                 category: "0",
-                sortBy: "name",
+                orderStatus: "-1",
+                sortBy: "orderStatus",
                 isSortAsc: true 
             },
             errors: {}
@@ -34,14 +35,9 @@ export default class ProductsFilterPanel extends React.Component {
             }
         }
   
-        if(fields["priceMin"] && !isNumeric(fields["priceMin"])) {
-            errors["priceMin"] = "Not a valid price";
+        if(fields["productId"] && !isNumeric(fields["productId"])) {
+            errors["productId"] = "Not a valid product id";
             formIsValid = false;
-        }
-  
-        if(fields["priceMax"] && !isNumeric(fields["priceMax"])) {
-          errors["priceMax"] = "Not a valid price";
-          formIsValid = false;
         }
   
         if(fields["pageSize"] && !isNumeric(fields["pageSize"])) {
@@ -67,15 +63,8 @@ export default class ProductsFilterPanel extends React.Component {
   
         let isAndNeeded = false;
   
-        if(fields["priceMin"]) {
-          gridifyQueryBuilder.setFilterGreaterOrEqual("price", fields["priceMin"]);
-          isAndNeeded = true;
-        }
-  
-        if(fields["priceMax"]) {
-          if(isAndNeeded)
-            gridifyQueryBuilder.setFilterAnd();
-          gridifyQueryBuilder.setFilterLessOrEqual("price", fields["priceMax"]);
+        if(fields["productId"]) {
+          gridifyQueryBuilder.setFilterEquals("productId", fields["productId"]);
           isAndNeeded = true;
         }
   
@@ -83,6 +72,13 @@ export default class ProductsFilterPanel extends React.Component {
           if(isAndNeeded)
             gridifyQueryBuilder.setFilterAnd();
           gridifyQueryBuilder.setFilterEquals("categoryId", fields["category"]);
+          isAndNeeded = true;
+        }
+
+        if(fields["orderStatus"] != -1) {
+          if(isAndNeeded)
+            gridifyQueryBuilder.setFilterAnd();
+          gridifyQueryBuilder.setFilterEquals("orderStatus", fields["orderStatus"]);
         }
   
         return gridifyQueryBuilder.build();
@@ -90,8 +86,7 @@ export default class ProductsFilterPanel extends React.Component {
   
     async onApplyFilter() {
         if(this.validateForm()) {
-          // await this.props.onApplyFilter(this.constructQuery());
-          await EventBus.publish("applyFilterToProductsList", this.constructQuery());
+          await EventBus.publish("applyFilterToOrdersList", this.constructQuery());
         }
     }
   
@@ -99,6 +94,7 @@ export default class ProductsFilterPanel extends React.Component {
         const fields = this.state.fields;
         fields[target.name] = target.value;
         this.setState({fields});
+        console.log(fields);
     }
 
     render() {
@@ -107,30 +103,17 @@ export default class ProductsFilterPanel extends React.Component {
             <div className="filtering_panel p-2 px-3 my-1 mx-2 rounded">
               <div className="form-row mt-2">
                 <div className="form-group col-md-1">
-                  <label htmlFor="priceMin">Price Min.</label>
+                  <label htmlFor="productId">Product Id</label>
                   <input 
                     className="form-control" 
                     type="text" 
                     onChange={this.handleChange} 
-                    id="priceMin"
-                    name="priceMin" 
+                    id="productId"
+                    name="productId" 
                     placeholder="0"
                     >
                   </input>
-                  <div className="text-danger">{this.state.errors["priceMin"]}</div>
-                </div>
-                <div className="form-group col-md-1">
-                  <label htmlFor="priceMax">Price Max.</label>
-                  <input 
-                    className="form-control" 
-                    type="text" 
-                    onChange={this.handleChange} 
-                    name="priceMax" 
-                    id="priceMax"
-                    placeholder="999"
-                    >
-                  </input>
-                  <div className="text-danger">{this.state.errors["priceMax"]}</div>
+                  <div className="text-danger">{this.state.errors["productId"]}</div>
                 </div>
                 <div className="form-group col-md-2">
                   <label htmlFor="pageSize">Results Count</label>
@@ -146,6 +129,15 @@ export default class ProductsFilterPanel extends React.Component {
                   <div className="text-danger">{this.state.errors["pageSize"]}</div>
                 </div>
                 <div className="form-group col-md">
+                  <label htmlFor="inputState">Order Status</label>
+                  <select defaultValue="-1" name="orderStatus" id="inputState" className="form-control" onChange={this.handleChange}>
+                    <option value="-1">Any</option>
+                    <option value="0">Ordered</option>
+                    <option value="1">Sent</option>
+                    <option value="2">Delivered</option>
+                  </select>
+                </div>
+                <div className="form-group col-md">
                   <label htmlFor="inputState">Category</label>
                   <select defaultValue="0" name="category" id="inputState" className="form-control" onChange={this.handleChange}>
                     <option value="0">Any</option>
@@ -158,10 +150,9 @@ export default class ProductsFilterPanel extends React.Component {
                 </div>
                 <div className="form-group col-md">
                   <label htmlFor="inputState">Sort By</label>
-                  <select defaultValue="name" name="sortBy" id="inputState" className="form-control" onChange={this.handleChange}>
-                    <option value="name">Name</option>
-                    <option value="price">Price </option>
-                    <option value="count">Count</option>
+                  <select defaultValue="orderStatus" name="sortBy" id="inputState" className="form-control" onChange={this.handleChange}>
+                    <option value="orderStatus">Order Status</option>
+                    <option value="count">Orders Count</option>
                   </select>
                 </div>
                 <div className="form-group col-md">

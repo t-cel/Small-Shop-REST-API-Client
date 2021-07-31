@@ -11,6 +11,7 @@ import {
 import { Link } from 'react-router-dom';
 
 import OperationButtons from './OperationButtons';
+import EventBus from 'eventing-bus';
 
 class OrderListItem extends React.Component {
   
@@ -18,7 +19,6 @@ class OrderListItem extends React.Component {
       super(props)
       this.state = {
         order: props.order,
-        product: undefined
       }
       this.handleChange = this.handleChange.bind(this);
     }
@@ -33,29 +33,19 @@ class OrderListItem extends React.Component {
       this.props.onAnyItemModify();
     }
   
-    async componentDidMount() {
-      const product = await getProduct(this.props.order.productId);
-      if(!product)
-        return;
-  
-      this.setState({
-        product: product
-      })
-    }
-  
     render() {
-      const { product } = this.state;
-      const productCategory = product === undefined ? "Loading..." : this.props.categories[product.categoryId-1].name;
+      const { order } = this.state;
+      const product = this.props.order.product;
       const orderStatuses = [ "Ordered", "Sent", "Delivered" ];
-      const orderStatusName = orderStatuses[this.props.order.orderStatus];
-  
+      const orderStatusName = orderStatuses[order.orderStatus];
+
       return (
         <tr className="order_list_item">
-          <td>{this.props.order.id}</td>
-          <td><Link to={`/products/${this.props.order.productId}`} target="_blank" rel="noopener noreferrer">{this.props.order.productId}</Link></td>
-          <td>{this.props.order.count}</td>
-          <td>{productCategory}</td>
-          <td>{this.props.order.buyerId}</td>
+          <td>{order.id}</td>
+          <td><Link to={`/products/${product.id}`} target="_blank" rel="noopener noreferrer">{product.name}</Link></td>
+          <td>{this.props.categories[product.categoryId-1].name}</td>
+          <td>{order.count}</td>
+          <td>{order.buyerId}</td>
           <td>
             <div className="dropdown" id="category_dropdown">
               <button className="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled={this.props.readonly}>
@@ -69,10 +59,10 @@ class OrderListItem extends React.Component {
             </div>
           </td>
           <td>
-            <button className="btn btn-danger btn-sm" onClick={() => this.props.onItemRemove(this.props.order.id)}>Remove</button>
+            <button className="btn btn-danger btn-sm" onClick={() => this.props.onItemRemove(order.id)}>Remove</button>
           </td>
         </tr>      
-      );
+      );     
     }
   }
   
@@ -83,12 +73,13 @@ export default class OrdersList extends React.Component {
         error: null,
         isLoaded: false,
         orders: [],
-        categories: [],
         anyItemModified: false,
       }
       this.confirmChanges = this.confirmChanges.bind(this);
       this.onAnyItemModify = this.onAnyItemModify.bind(this);
       this.onItemRemove = this.onItemRemove.bind(this);
+      this.loadItems = this.loadItems.bind(this);
+      this.filterBusEvent = undefined;
     }
   
     async confirmChanges() {  
@@ -137,17 +128,33 @@ export default class OrdersList extends React.Component {
     }
   
     async componentDidMount() {
+      this.filterBusEvent = EventBus.on("applyFilterToOrdersList", async (query) => await this.loadItems(query));
+      await this.loadItems("");
+    }
+
+    async componentWillUnmount() {
+      this.filterBusEvent(); //unregister global event
+    }
+  
+    async loadItems(query) {
+      this.setState({
+        orders: [],
+        isLoaded: false
+      })
+
       const categoriesData = await getCategories();
       if(!categoriesData)
         return;
   
-      const ordersData = await getOrders();
+      const ordersData = await getOrders(query);
       if(!ordersData)
         return;
   
-      for(let i in ordersData)
+      for(let i in ordersData) {
         ordersData[i].modified = false;
-  
+        ordersData[i].product = await getProduct(ordersData[i].productId);
+      }
+
       this.setState({
         error: false,
         isLoaded: true,
@@ -155,7 +162,7 @@ export default class OrdersList extends React.Component {
         categories: categoriesData
       });
     }
-  
+
     render() {
       const { error, isLoaded, orders, categories } = this.state;
       if(error){
@@ -176,13 +183,13 @@ export default class OrdersList extends React.Component {
       else {
         return (
           <div className="container">
-            <table className="table text-light">
+            <table className="table text-light mt-2">
               <thead>
                 <tr>
                   <th scope="col">Id</th>
-                  <th scope="col">Product Id</th>
-                  <th scope="col">Count</th>
+                  <th scope="col">Product</th>
                   <th scope="col">Category</th>
+                  <th scope="col">Count</th>
                   <th scope="col">Buyer Id</th>
                   <th scope="col">Order Status</th>
                   <th></th>
@@ -191,7 +198,7 @@ export default class OrdersList extends React.Component {
               <tbody>
                 {
                 orders.map(order => (
-                  <OrderListItem order={order} categories={categories} onAnyItemModify={this.onAnyItemModify} onItemRemove={this.onItemRemove}/>
+                  <OrderListItem order={order} onAnyItemModify={this.onAnyItemModify} onItemRemove={this.onItemRemove} categories={categories}/>
                 ))}
               </tbody>
             </table>

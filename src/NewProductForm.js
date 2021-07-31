@@ -3,7 +3,8 @@ import React from 'react';
 import { 
     createProduct, 
     uploadImage,
-    addProductImage
+    addProductImage,
+    getCategories
 } from './api';
 
 import { Link } from 'react-router-dom';
@@ -23,6 +24,7 @@ export default class NewProductForm extends React.Component {
             fields: { "categoryId": 1 },
             errors: {},
             picture: undefined,
+            categories: [],
         }
         this.handleChange = this.handleChange.bind(this);
         this.onAddBtnClick = this.onAddBtnClick.bind(this);
@@ -37,7 +39,17 @@ export default class NewProductForm extends React.Component {
     }
 
     onPictureSelect({target}) {
-        this.state.picture = target.files[0];
+        this.setState({picture: target.files[0]});
+    }
+
+    async componentDidMount() {
+        const categories = await getCategories();
+        if(!categories)
+            return;
+
+        console.log(categories);
+
+        this.setState({categories: categories})
     }
 
     validateForm() {
@@ -118,6 +130,8 @@ export default class NewProductForm extends React.Component {
     }
     
     render() {
+        const categoryText = this.state.categories.length > 0 ? this.state.categories[this.state.fields["categoryId"]-1].name : "Loading...";
+
         return (
         <div className="container">
             <Link to="/products" style={{ textDecoration: 'none', color: 'white', width:"100%"  }}>
@@ -177,7 +191,7 @@ export default class NewProductForm extends React.Component {
                     <label htmlFor="category_dropdown">Category:</label>
                         <div className="dropdown" id="category_dropdown">
                         <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled={this.props.readonly}>
-                            Sport
+                            {categoryText}
                         </button>
                         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <button className="dropdown-item" onClick={this.handleChange} name="categoryId" value="1">Sport</button>

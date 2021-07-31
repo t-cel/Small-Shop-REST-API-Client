@@ -29,11 +29,15 @@ async function fetchDataFromAPI(url, init) {
   .catch((error) => console.error(error));
 }
 
+// CATEGORIES
+
 export async function getCategories() {
   const url = `${baseUrl}/categories`;
   const init = { method: 'GET', headers: headers};
   return await fetchDataFromAPI(url, init);
 }
+
+// PRODUCTS
 
 export async function getProducts(query) {
   const url = `${baseUrl}/products${query}`;
@@ -98,6 +102,8 @@ export async function addProductImage(productId, productImage) {
   return await fetchDataFromAPI(url, init);
 }
 
+// IMAGES
+
 export async function uploadImage(image) {
   const url = `${baseUrl}/images/`;
   const postHeaders = {
@@ -124,14 +130,18 @@ export async function getImage(imageURL) {
   .catch((error) => console.error(error));
 }
 
+// USERS
+
 export async function getUser() {
   const url = `${baseUrl}/user`;
   const init = { method: 'GET', headers: headers };
   return await fetchDataFromAPI(url, init);
 }
 
-export async function getOrders() {
-  const url = `${baseUrl}/orders`;
+// ORDERS
+
+export async function getOrders(query) {
+  const url = `${baseUrl}/orders${query}`;
   const init = { method: 'GET', headers: headers };
   return await fetchDataFromAPI(url, init); 
 }
