@@ -29,15 +29,15 @@ const ProductsFilterPanel = () => {
     const result = formValidator.validate([
       { 
         fieldName: "priceMin", 
-        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly()
+        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build()
       },
       { 
         fieldName: "priceMax", 
-        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly()
+        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build()
       },
       { 
         fieldName: "pageSize", 
-        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly()
+        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build()
       },
     ], fieldsToFilter, _errors);
 

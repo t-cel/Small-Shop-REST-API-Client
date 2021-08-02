@@ -12,38 +12,45 @@ import {
 
 import OperationButtons from './OperationButtons';
 import EventBus from 'eventing-bus';
-import { withRouter } from 'react-router';
+import { useParams, withRouter } from 'react-router';
 import GridifyQueryBuilder from './GridifyQueryBuilder';
 
 import { TextInput, CategorySelectInput } from './Inputs';
 
 const ProductListItem = (props) => {
   const [readonly, setReadonly] = useState(false);
+  const [product, setProduct] = useState({});
 
-  useEffect(async () => {
-    // check whether there are some pending orders with this product, if yes, dont allow to modify it.
-    const queryBuilder = new GridifyQueryBuilder();
-    const query = queryBuilder.setFilterEquals("productId", props.product.id).build();
-    const ordersWithOurProduct = await getOrders(query);
-    if(ordersWithOurProduct.length > 0) {
-      setReadonly(true);
+  useEffect(() => {
+    async function queryItem() {
+      // check whether there are some pending orders with this product, if yes, dont allow to modify it.
+      const queryBuilder = new GridifyQueryBuilder();
+      const query = queryBuilder.setFilterEquals("productId", props.product.id).build();
+      const ordersWithOurProduct = await getOrders(query);
+      if(ordersWithOurProduct.length > 0) {
+        setReadonly(true);
+      }
     }
-  });
+
+    queryItem();
+  }, []);
 
   const handleChange = ({target}) => {
-    props.product.modified = true;
-    props.product[target.id] = target.value;
+    const _product = Object.assign({}, product);
+    _product.modified = true;
+    _product[target.id] = target.value;
+    setProduct(_product);
     props.onAnyItemModify();
   }
 
   return (
     <li className="list-group-item listItem m-2">
       <div className="p-1 mb-2">
-        <b>Product Id: {props.product.id}</b> 
-        { readonly ? (<div class="text-warning">There are pending orders for this product so it can't be modified now.</div>) : ("")}
+        <b>Product Id: {product.id}</b> 
+        { readonly ? (<div className="text-warning">There are pending orders for this product so it can't be modified now.</div>) : ("")}
 
         <div className="float-right">
-          <button className="btn btn-danger btn-sm" onClick={() => this.props.onItemRemove(props.product.id)} disabled={readonly}>Remove</button>
+          <button className="btn btn-danger btn-sm" onClick={() => props.onItemRemove(props.product.id)} disabled={readonly}>Remove</button>
         </div>
       </div>
       <div className="d-flex flex-row justify-content-between">
@@ -74,12 +81,13 @@ const ProductListItem = (props) => {
 }
 
 const ProductsList = (props) => {
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [anyItemModified, setAnyItemModified] = useState(false);
   const [itemModificationError, setItemModificationError] = useState(false);
+  const { id } = useParams();
 
   let filterBusEvent = undefined;
 
@@ -113,9 +121,8 @@ const ProductsList = (props) => {
   }
 
   const fetchItems = async () => {
-    const lastStrAfterSlash = window.location.href.substr(window.location.href.lastIndexOf("/")+1);
-    if(!isNaN(lastStrAfterSlash)) {
-      const query = new GridifyQueryBuilder().setFilterEquals("id", lastStrAfterSlash).build();
+    if(id) {
+      const query = new GridifyQueryBuilder().setFilterEquals("id", id).build();
       await loadItems(query);
     }
     else {
@@ -138,7 +145,7 @@ const ProductsList = (props) => {
     setError(false);
 
     const categoriesData = await getCategories();
-    if(!categoriesData){
+    if (!categoriesData) {
       setError(true);
       return;
     }
@@ -173,10 +180,6 @@ const ProductsList = (props) => {
     setItems(productsData);
     setCategories(categoriesData);
     setLoaded(true);
-  }
-
-  const onAnyItemModify = () => {
-    setAnyItemModified(true);
   }
 
   const onItemRemove = async (productId) => {
@@ -214,7 +217,7 @@ const ProductsList = (props) => {
         <div className="d-flex">
           <ul className="list-group itemsList mt-1 mx-2">      
             {items.map(item =>(
-            <ProductListItem product={item} categories={categories} onAnyItemModify={onAnyItemModify} onItemRemove={onItemRemove}/>
+            <ProductListItem product={item} categories={categories} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove}/>
             ))}
           </ul>
         </div>

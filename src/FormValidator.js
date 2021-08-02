@@ -9,10 +9,6 @@ const isNumeric = (str) => {
 
 // constraint validators
 
-const AllowEmpty = (field) => {
-  return true;
-}
-
 const NotEmptyFieldValidator = (field) => {
   return field ? true : false;
 }
@@ -45,23 +41,21 @@ export function FormValidator() {
 
   this.validate = function(fieldsConstraints, fields, errors) {
     if(fields.length != fieldsConstraints.length)
-    {
       throw new Error("Count of fields to validate must be equal to validation rules count");
-    }
 
     let formIsValid = true;
     for(let fieldIndex in fields) {
       const field = fields[fieldIndex];
-      const constrains = fieldsConstraints[fieldIndex].constraints.constraints;
+      const constraints = fieldsConstraints[fieldIndex].constraints;
 
-      if(constrains["allowEmpty"].value && !field)
+      if(constraints["allowEmpty"] && !field)
         break;
 
       for(let validatorIndex in this.validators) {
         const validator = this.validators[validatorIndex];
-        if(constrains[validator.name].value) { 
-          if(!validator.validate(field, constrains)) {
-            errors[fieldsConstraints[fieldIndex].fieldName] = constrains[validator.name].errorMessage;
+        if(constraints[validator.name]) { 
+          if(!validator.validate(field, constraints)) {
+            errors[fieldsConstraints[fieldIndex].fieldName] = constraints[validator.name].errorMessage;
             formIsValid = false;
             break; //break on first error
           }
@@ -106,14 +100,7 @@ export function ValidationConstraintBuilder() {
   };
 
   this.reset = function() {
-    this.constraints = {
-      notEmpty: { value: false },
-      numbersOnly: { value: false },
-      maxLen: { value: 512 },
-      maxVal: { value: Number.MAX_VALUE },
-      minVal: { value: Number.MIN_VALUE },
-      allowEmpty: { value: false }
-    };
+    this.constraints = {};
     return this;
   };
 

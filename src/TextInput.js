@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export const TextInput = (props) => {
   return (
-    <div>
+    <div style={{width: "100%"}}>
       <label htmlFor={props.id}>{props.text}</label>
       <input 
         className="form-control" 
