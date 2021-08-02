@@ -5,7 +5,7 @@ import { FormValidator, ValidationConstraintBuilder } from './FormValidator';
 import { buildQueries } from '@testing-library/react';
 import { 
   TextInput, 
-  CategorySelectInput, 
+  CategoryQuerySelectInput, 
   ProductFilterSortBySelectInput,
   OrderSelectInput
 } from "./Inputs";
@@ -96,7 +96,7 @@ const ProductsFilterPanel = () => {
             <TextInput id="pageSize" text="Results Count" handleChange={handleChange} errors={errors} placeholder="50"/>
           </div>
           <div className="form-group col-md">
-            <CategorySelectInput handleChange={handleChange}/>
+            <CategoryQuerySelectInput handleChange={handleChange}/>
           </div>
           <div className="form-group col-md">
             <ProductFilterSortBySelectInput handleChange={handleChange}/>

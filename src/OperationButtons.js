@@ -4,17 +4,24 @@ import { Link } from "react-router-dom";
 
 class ModificationAlert extends React.Component {
     render() {
+        if(this.props.error) {
+          return (
+            <div className="alert alert-danger" role="alert">
+              There was an error when trying to save changes. Checks if fields' values are valid.
+            </div>
+          );          
+        }
         if(this.props.anyItemModified) {
         return (
-            <div className="alert alert-warning" role="alert">
+          <div className="alert alert-warning" role="alert">
             Click Confirm Changes button to save changes
-            </div>
+          </div>
         );
         } else {
         return (
-            <div className="alert alert-success" role="alert">
+          <div className="alert alert-success" role="alert">
             All Changes Saved.
-            </div>
+          </div>
         );
         }
     }
@@ -24,7 +31,7 @@ export default class OperationButtons extends React.Component {
     render() {
       return (
         <div className="container my-2">
-          <ModificationAlert anyItemModified={this.props.anyItemModified}/>
+          <ModificationAlert anyItemModified={this.props.anyItemModified} error={this.props.error}/>
   
           <div className="d-flex flex-row my-2">
             <Link to={this.props.addNewItemRoute} style={{ textDecoration: 'none', color: 'white', width:"100%"  }}>

@@ -1,4 +1,5 @@
 export { TextInput } from './TextInput';
-export { CategorySelectInput } from './CategorySelectInput';
+export { CategoryQuerySelectInput } from './CategoryQuerySelectInput';
 export { ProductFilterSortBySelectInput } from './ProductFilterSortBySelectInput';
 export { OrderSelectInput } from './OrderSelectInput';
+export { CategorySelectInput } from './CategorySelectInput';

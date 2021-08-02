@@ -11,8 +11,9 @@ export const TextInput = (props) => {
         id={props.id}
         placeholder={props.placeholder}
         defaultValue={props.defaultValue}
+        disabled={props.disabled}
       ></input>
-      <div className="text-danger">{props.errors[props.id]}</div>
+      <div className="text-danger">{props.errors ? props.errors[props.id] : ""}</div>
     </div>
   );
 }

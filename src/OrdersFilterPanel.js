@@ -21,34 +21,34 @@ export default class OrdersFilterPanel extends React.Component {
     }
 
     validateForm() {
-        const fields = this.state.fields;
-        let formIsValid = true;
-        let errors = [];
-  
-        //https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
-        const isNumeric = (str) => {
-            if (typeof str != "string") return false;
-  
-            if(!isNaN(str)) {
-                const asFloat = parseFloat(str);
-                return asFloat > 0.0 && !isNaN(parseFloat(str));
-            }
-        }
-  
-        if(fields["productId"] && !isNumeric(fields["productId"])) {
-            errors["productId"] = "Not a valid product id";
-            formIsValid = false;
-        }
-  
-        if(fields["pageSize"] && !isNumeric(fields["pageSize"])) {
-          errors["pageSize"] = "Not a valid count";
-          formIsValid = false;
-        }
-  
-        this.setState({fields, errors});
-  
-        return formIsValid;
+      const fields = this.state.fields;
+      let formIsValid = true;
+      let errors = [];
+
+      //https://stackoverflow.com/questions/175739/built-in-way-in-javascript-to-check-if-a-string-is-a-valid-number
+      const isNumeric = (str) => {
+          if (typeof str != "string") return false;
+
+          if(!isNaN(str)) {
+              const asFloat = parseFloat(str);
+              return asFloat > 0.0 && !isNaN(parseFloat(str));
+          }
       }
+
+      if(fields["productId"] && !isNumeric(fields["productId"])) {
+          errors["productId"] = "Not a valid product id";
+          formIsValid = false;
+      }
+
+      if(fields["pageSize"] && !isNumeric(fields["pageSize"])) {
+        errors["pageSize"] = "Not a valid count";
+        formIsValid = false;
+      }
+
+      this.setState({fields, errors});
+
+      return formIsValid;
+    }
   
     constructQuery() {
         const fields = this.state.fields;
