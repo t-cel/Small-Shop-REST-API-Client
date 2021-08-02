@@ -13,20 +13,15 @@ const ShopPanelHeader = () => {
     }
   })
 
-  if(user) {
-    return (
-      <div className="container py-2">
-        <div className="d-flex">
-          <ShopPanelLogo/>
-            <button className="btn btn-danger float-right btn-sm" style={{height: "50%"}}>Log Off</button>
-        </div>
-        <div className="pb-2 text-light">Logged as: <b>{user.name}</b></div>
+  return (
+    <div className="container py-2">
+      <div className="d-flex">
+        <ShopPanelLogo/>
+        <button className="btn btn-danger float-right btn-sm" style={{height: "50%"}}>Log Off</button>
       </div>
-    );
-  }
-  else {
-    return "Loading...";
-  }
+      <div className="pb-2 text-light">Logged as: <b>{user ? user.name : "Loading..."}</b></div>
+    </div>
+  );
 }
 
 export default ShopPanelHeader;

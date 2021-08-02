@@ -4,14 +4,14 @@ import ShopPanelLogo from './ShopPanelLogo';
 
 import { getUser, setCredidentials } from './api'
 
-function LoginPanel(props) {
+const LoginPanel = (props) => {
     
     const [fields, setFields] = useState({ email: "", password: "" });
     const [error, setError] = useState();
 
     function handleChange({target}) {
         const _fields = fields;
-        _fields[target.name] = target.value;
+        _fields[target.id] = target.value;
         setFields(_fields);
     }
 
@@ -48,7 +48,6 @@ function LoginPanel(props) {
                         type="text" 
                         onChange={handleChange} 
                         id="email"
-                        name="email" 
                         placeholder="Email" 
                     >
                     </input>
@@ -62,7 +61,6 @@ function LoginPanel(props) {
                         type="password" 
                         onChange={handleChange} 
                         id="password"
-                        name="password" 
                         placeholder="Password" 
                     >
                     </input>
