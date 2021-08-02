@@ -1,0 +1,18 @@
+import React, { useState } from 'react';
+
+export const TextInput = (props) => {
+  return (
+    <div>
+      <label htmlFor={props.id}>{props.text}</label>
+      <input 
+        className="form-control" 
+        type="text" 
+        onChange={props.handleChange} 
+        id={props.id}
+        placeholder={props.placeholder}
+        defaultValue={props.defaultValue}
+      ></input>
+      <div className="text-danger">{props.errors[props.id]}</div>
+    </div>
+  );
+}

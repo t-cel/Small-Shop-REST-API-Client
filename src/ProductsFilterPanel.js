@@ -3,64 +3,12 @@ import GridifyQueryBuilder from './GridifyQueryBuilder';
 import EventBus from 'eventing-bus';
 import { FormValidator, ValidationConstraintBuilder } from './FormValidator';
 import { buildQueries } from '@testing-library/react';
-
-const TextInput = (props) => {
-  return (
-    <div>
-      <label htmlFor={props.id}>{props.text}</label>
-      <input 
-        className="form-control" 
-        type="text" 
-        onChange={props.handleChange} 
-        id={props.id}
-        placeholder={props.placeholder}
-        defaultValue={props.defaultValue}
-      ></input>
-      <div className="text-danger">{props.errors[props.id]}</div>
-    </div>
-  );
-}
-
-const CategorySelectInput = (props) => {
-  return (
-    <div>
-      <label htmlFor="category">Category</label>
-      <select defaultValue="0" id="category" className="form-control" onChange={props.handleChange}>
-        <option value="0">Any</option>
-        <option value="1">Sport</option>
-        <option value="2">Clothes</option>
-        <option value="3">Household</option>
-        <option value="4">Car Accessories</option>
-        <option value="5">Kitchen Accessories</option>
-      </select>
-    </div>
-  );
-}
-
-const ProductFilterSortBySelectInput = (props) => {
-  return (
-    <div>
-      <label htmlFor="sortBy">Sort By</label>
-      <select defaultValue="name" id="sortBy" className="form-control" onChange={props.handleChange}>
-        <option value="name">Name</option>
-        <option value="price">Price </option>
-        <option value="count">Count</option>
-      </select>
-    </div>
-  )
-}
-
-const OrderSelectInput = (props) => {
-  return (
-    <div>
-      <label htmlFor="isSortAsc">Order</label>
-      <select defaultValue={true} id="isSortAsc" className="form-control" onChange={props.handleChange}>
-        <option value={true}>Ascending</option>
-        <option value={false}>Descending</option>
-      </select>
-    </div>
-  );
-}
+import { 
+  TextInput, 
+  CategorySelectInput, 
+  ProductFilterSortBySelectInput,
+  OrderSelectInput
+} from "./Inputs";
 
 const ProductsFilterPanel = () => {
   const [fields, setFields] = useState({ category: "0", sortBy: "name", isSortAsc: true, priceMin: "", priceMax: "", pageSize: ""});
