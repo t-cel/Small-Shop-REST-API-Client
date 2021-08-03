@@ -10,12 +10,12 @@ import {
   OrderSelectInput
 } from "./Inputs";
 
-const ProductsFilterPanel = () => {
+const ProductsFilterPanel = (props) => {
   const [fields, setFields] = useState({ category: "0", sortBy: "name", isSortAsc: true, priceMin: "", priceMax: "", pageSize: ""});
   const [errors, setErrors] = useState({ priceMin: "", priceMax: "", pageSize: "" });
 
   const handleChange = ({target}) => {
-    const _fields = fields;
+    const _fields = Object.assign({}, fields);
     _fields[target.id] = target.value;
     setFields(_fields);
   }
@@ -26,19 +26,12 @@ const ProductsFilterPanel = () => {
     const fieldsToFilter = [fields["priceMin"], fields["priceMax"], fields["pageSize"] ];
     const _errors = { priceMin: "", priceMax: "", pageSize: "" };
 
+    const constraints = constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build();
+
     const result = formValidator.validate([
-      { 
-        fieldName: "priceMin", 
-        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build()
-      },
-      { 
-        fieldName: "priceMax", 
-        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build()
-      },
-      { 
-        fieldName: "pageSize", 
-        constraints: constraintBuilder.reset().setAllowEmpty().setNumbersOnly().build()
-      },
+      { fieldName: "priceMin", constraints: constraints },
+      { fieldName: "priceMax", constraints: constraints },
+      { fieldName: "pageSize", constraints: constraints },
     ], fieldsToFilter, _errors);
 
     setErrors({priceMin: _errors.priceMin, priceMax: _errors.priceMax, pageSize: _errors.pageSize});

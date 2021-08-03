@@ -48,8 +48,8 @@ export function FormValidator() {
       const field = fields[fieldIndex];
       const constraints = fieldsConstraints[fieldIndex].constraints;
 
-      if(constraints["allowEmpty"] && !field)
-        break;
+      if(constraints["allowEmpty"] && (!field || field.length === 0))
+        continue;
 
       for(let validatorIndex in this.validators) {
         const validator = this.validators[validatorIndex];
