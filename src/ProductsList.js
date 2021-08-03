@@ -19,7 +19,7 @@ import { TextInput, CategorySelectInput } from './Inputs';
 
 const ProductListItem = (props) => {
   const [readonly, setReadonly] = useState(false);
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState(props.product);
 
   useEffect(() => {
     // check whether there are some pending orders with this product, if yes, dont allow to modify it.
@@ -34,6 +34,10 @@ const ProductListItem = (props) => {
 
     queryOrders();
   }, []);
+
+  useEffect(() => {
+    setProduct(props.product);
+  }, [props.product])
 
   const handleChange = ({target}) => {
     const _product = Object.assign({}, product);
@@ -50,28 +54,28 @@ const ProductListItem = (props) => {
         { readonly ? (<div className="text-warning">There are pending orders for this product so it can't be modified now.</div>) : ("")}
 
         <div className="float-right">
-          <button className="btn btn-danger btn-sm" onClick={() => props.onItemRemove(props.product.id)} disabled={readonly}>Remove</button>
+          <button className="btn btn-danger btn-sm" onClick={() => props.onItemRemove(product.id)} disabled={readonly}>Remove</button>
         </div>
       </div>
       <div className="d-flex flex-row justify-content-between">
         <div className="d-flex">
           <div className="pictureCol">
-            <img src={props.product.image} className="pictmp"></img>
+            <img src={product.image} className="pictmp"></img>
           </div>
           <div className="d-flex flex-column pl-4">
             <div className="py-1">
-              <TextInput id="name" text="Name" handleChange={handleChange} defaultValue={props.product.name} disabled={readonly}/>
-              <CategorySelectInput handleChange={handleChange} defaultValue={props.categories[props.product.categoryId-1].name} disabled={readonly}/>
+              <TextInput id="name" text="Name" handleChange={handleChange} defaultValue={product.name} disabled={readonly}/>
+              <CategorySelectInput handleChange={handleChange} defaultValue={props.categories[product.categoryId-1].name} disabled={readonly}/>
             </div>
           </div>
           <div className="d-flex flex-column pl-4">
             <div className="py-2">
-              <TextInput id="price" text="Price" handleChange={handleChange} defaultValue={props.product.price} disabled={readonly}/>
+              <TextInput id="price" text="Price" handleChange={handleChange} defaultValue={product.price} disabled={readonly}/>
             </div>
           </div>        
           <div className="d-flex flex-column pl-4">
             <div className="py-2">
-              <TextInput id="count" text="Count" handleChange={handleChange} defaultValue={props.product.count} disabled={readonly}/>
+              <TextInput id="count" text="Count" handleChange={handleChange} defaultValue={product.count} disabled={readonly}/>
             </div>
           </div>  
         </div>
@@ -216,8 +220,8 @@ const ProductsList = (props) => {
       <div className="container">
         <div className="d-flex">
           <ul className="list-group itemsList mt-1 mx-2">      
-            {items.map(item =>(
-            <ProductListItem product={item} categories={categories} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove}/>
+            {items.map((item, index) =>(
+            <ProductListItem key={index} product={item} categories={categories} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove}/>
             ))}
           </ul>
         </div>

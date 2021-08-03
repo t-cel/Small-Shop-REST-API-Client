@@ -161,8 +161,8 @@ const OrdersList = (props) => {
             </tr>
           </thead>
           <tbody>
-            {items.map(item => (
-              <OrderListItem order={item} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove} categories={categories}/>
+            {items.map((item, index) => (
+              <OrderListItem key={index} order={item} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove} categories={categories}/>
             ))}
           </tbody>
         </table>

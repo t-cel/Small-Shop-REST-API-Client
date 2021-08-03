@@ -46,7 +46,6 @@ export async function getCategories() {
 export async function getProducts(query) {
   const url = `${baseUrl}/products${query}`;
   const init = { method: 'GET', headers: createHeaders()};
-  console.log(url);
   return await fetchDataFromAPI(url, init);
 }
 

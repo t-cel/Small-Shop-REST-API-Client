@@ -71,7 +71,6 @@ const NewProductForm = (props) => {
                 if(!uploadResult) return;
 
                 //add image to product
-                console.log(uploadResult);
                 await addProductImage(resultProduct.id, uploadResult);
             }
 
