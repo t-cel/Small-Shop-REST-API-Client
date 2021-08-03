@@ -19,10 +19,9 @@ const LoginPanel = (props) => {
         const { email, password } = fields;
         setCredidentials(email, password);
         const user = await getUser();
-        if(!user) {
+        if(user instanceof Error) {
             setError("Wrong email or password");
-        }
-        else {
+        } else {
             props.history.push('/products');
         }
     }
