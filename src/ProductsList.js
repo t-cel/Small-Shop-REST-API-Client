@@ -22,8 +22,8 @@ const ProductListItem = (props) => {
   const [product, setProduct] = useState({});
 
   useEffect(() => {
-    async function queryItem() {
-      // check whether there are some pending orders with this product, if yes, dont allow to modify it.
+    // check whether there are some pending orders with this product, if yes, dont allow to modify it.
+    async function queryOrders() {
       const queryBuilder = new GridifyQueryBuilder();
       const query = queryBuilder.setFilterEquals("productId", props.product.id).build();
       const ordersWithOurProduct = await getOrders(query);
@@ -32,7 +32,7 @@ const ProductListItem = (props) => {
       }
     }
 
-    queryItem();
+    queryOrders();
   }, []);
 
   const handleChange = ({target}) => {
@@ -184,10 +184,10 @@ const ProductsList = (props) => {
 
   const onItemRemove = async (productId) => {
     if (window.confirm('Do you really want to remove this product?')) {
-      const products = [...items];
-      products.splice(products.indexOf(products => products.id === productId), 1);
+      const _items = [...items];
+      _items.splice(_items.indexOf(products => products.id === productId), 1);
       await deleteProduct(productId);
-      setItems(products);
+      setItems(_items);
     } 
   }
 

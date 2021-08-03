@@ -6,12 +6,14 @@ import { getUser } from './api';
 const ShopPanelHeader = () => {
   const [user, setUser] = useState();
   
-  useEffect(async () => {
-    const user = await getUser();
-    if(user) {
-      setUser(user);
+  useEffect(() => {
+    async function fetchUser() {
+      const user = await getUser();
+      if(user)
+        setUser(user);
     }
-  })
+    fetchUser();
+  }, []);
 
   return (
     <div className="container py-2">
