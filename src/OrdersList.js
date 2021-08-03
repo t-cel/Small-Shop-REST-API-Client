@@ -14,16 +14,11 @@ import OperationButtons from './OperationButtons';
 import EventBus from 'eventing-bus';
 
 const OrderListItem = (props) => {
-  const [order, setOrder] = useState(props.order);
-
   const handleChange = ({target}) => {
-    const _order = Object.assign({}, order);
-    _order.modified = true;
-    _order[target.id] = target.value;
-    setOrder(_order);
-    props.onAnyItemModify();
+    props.handleChange(target, props.order.id);
   }
 
+  const order = props.order;
   const product = order.product;
   const orderStatuses = [ "Ordered", "Sent", "Delivered" ];
   
@@ -63,10 +58,11 @@ const OrdersList = (props) => {
   let filterBusEvent = undefined;
 
   const confirmChanges = async () => {
-    let _items = [...items];
+    const _items = [...items];
 
     for(let i in _items) {
       if(_items[i].modified) {
+        console.log("modified item: ", i);
         const updatedItem = {
           id: _items[i].id,
           buyerId: _items[i].buyerId,
@@ -132,6 +128,15 @@ const OrdersList = (props) => {
     } 
   }
 
+  const handleChange = (target, orderId) => {
+    const _items = [...items];
+    const order = _items[_items.findIndex(item => item.id == orderId)];
+    order.modified = true;
+    order[target.id] = target.value;
+    setItems(_items);
+    setAnyItemModified(true);
+  }
+
   if(error) {
     return <div>There was an error when loading orders</div>
   }
@@ -162,7 +167,7 @@ const OrdersList = (props) => {
           </thead>
           <tbody>
             {items.map((item, index) => (
-              <OrderListItem key={index} order={item} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove} categories={categories}/>
+              <OrderListItem key={index} order={item} handleChange={handleChange} onItemRemove={onItemRemove} categories={categories}/>
             ))}
           </tbody>
         </table>

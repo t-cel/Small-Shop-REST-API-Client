@@ -15,7 +15,7 @@
 
 .itemsList {
   height: 55vh;
-  width: 80vw;
+  width: 100%;
   overflow: scroll;
   background-color:rgb(39, 37, 41) !important;
 }
@@ -27,11 +27,6 @@
 a {
   color: white;
 }
-
-/* .order_list_item td, 
-.order_list_item th {
-  text-align: center;
-} */
 
 .container {
   color: white;

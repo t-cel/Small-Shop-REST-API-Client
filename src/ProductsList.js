@@ -19,7 +19,6 @@ import { TextInput, CategorySelectInput } from './Inputs';
 
 const ProductListItem = (props) => {
   const [readonly, setReadonly] = useState(false);
-  const [product, setProduct] = useState(props.product);
 
   useEffect(() => {
     // check whether there are some pending orders with this product, if yes, dont allow to modify it.
@@ -35,18 +34,11 @@ const ProductListItem = (props) => {
     queryOrders();
   }, []);
 
-  useEffect(() => {
-    setProduct(props.product);
-  }, [props.product])
-
   const handleChange = ({target}) => {
-    const _product = Object.assign({}, product);
-    _product.modified = true;
-    _product[target.id] = target.value;
-    setProduct(_product);
-    props.onAnyItemModify();
+    props.handleChange(target, props.product.id);
   }
 
+  const product = props.product;
   return (
     <li className="list-group-item listItem m-2">
       <div className="p-1 mb-2">
@@ -195,6 +187,15 @@ const ProductsList = (props) => {
     } 
   }
 
+  const handleChange = (target, productId) => {
+    const _items = [...items];
+    const item = _items[_items.findIndex(item => item.id == productId)];
+    item.modified = true;
+    item[target.id] = target.value;
+    setItems(_items);
+    setAnyItemModified(true);
+  }
+
   if(error) {
     return (
       <div className="container">
@@ -221,7 +222,7 @@ const ProductsList = (props) => {
         <div className="d-flex">
           <ul className="list-group itemsList mt-1 mx-2">      
             {items.map((item, index) =>(
-            <ProductListItem key={index} product={item} categories={categories} onAnyItemModify={() => setAnyItemModified(true)} onItemRemove={onItemRemove}/>
+            <ProductListItem key={index} product={item} categories={categories} handleChange={handleChange} onItemRemove={onItemRemove}/>
             ))}
           </ul>
         </div>
