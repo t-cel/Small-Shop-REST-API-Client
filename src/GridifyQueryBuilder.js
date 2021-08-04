@@ -73,8 +73,8 @@ export default function GridifyQueryBuilder() {
 
     this.build = function() {
         return (
-            (this.query != QueryStartValue ? this.query : QueryStartValue) + 
-            (this.filter != FilterStartValue ? ((this.query != QueryStartValue ? '&' : '') + this.filter) : '')
+            (this.query !== QueryStartValue ? this.query : QueryStartValue) + 
+            (this.filter !== FilterStartValue ? ((this.query !== QueryStartValue ? '&' : '') + this.filter) : '')
         );
     };
 }

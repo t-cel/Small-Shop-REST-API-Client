@@ -25,7 +25,7 @@ const AppSession = (props) => {
   const history = useHistory();
   const location = useLocation();
   
-  const isOnLoginPage = () => location.pathname == "/login";
+  const isOnLoginPage = () => location.pathname === "/login";
 
   // log off automatically after some time of idle
   const handleOnIdle = event => {

@@ -53,14 +53,14 @@ const OrdersFilterPanel = (props) => {
       isAndNeeded = true;
     }
 
-    if(fields["category"] != 0) {
+    if(fields["category"] !== '0') {
       if(isAndNeeded)
         gridifyQueryBuilder.setFilterAnd();
       gridifyQueryBuilder.setFilterEquals("categoryId", fields["category"]);
       isAndNeeded = true;
     }
 
-    if(fields["orderStatus"] != -1) {
+    if(fields["orderStatus"] !== '-1') {
       if(isAndNeeded)
         gridifyQueryBuilder.setFilterAnd();
       gridifyQueryBuilder.setFilterEquals("orderStatus", fields["orderStatus"]);

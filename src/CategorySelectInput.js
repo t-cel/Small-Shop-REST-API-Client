@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 export const CategorySelectInput = (props) => {
   return (
     <div>

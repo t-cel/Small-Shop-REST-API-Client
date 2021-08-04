@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 export const OrderSelectInput = (props) => {
   return (
     <div>

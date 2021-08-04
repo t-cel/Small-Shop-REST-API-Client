@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { 
     getProductImages, 
@@ -53,7 +53,7 @@ const ProductListItem = (props) => {
       <div className="d-flex flex-row justify-content-between">
         <div className="d-flex">
           <div className="pictureCol">
-            <img src={product.image} className="pictmp"></img>
+            <img src={product.image} alt="" className="pictmp"></img>
           </div>
           <div className="d-flex flex-column pl-4">
             <div className="py-1">
@@ -85,8 +85,6 @@ const ProductsList = (props) => {
   const [anyItemModified, setAnyItemModified] = useState(false);
   const [itemModificationError, setItemModificationError] = useState(false);
   const { id } = useParams();
-
-  let filterBusEvent = undefined;
 
   const confirmChanges = async () => {
     let _items = [...items];
@@ -128,7 +126,7 @@ const ProductsList = (props) => {
   }
 
   useEffect(() => {
-    filterBusEvent = EventBus.on("applyFilterToProductsList", async (query) => await loadItems(query));
+    const filterBusEvent = EventBus.on("applyFilterToProductsList", async (query) => await loadItems(query));
 
     fetchItems();
 

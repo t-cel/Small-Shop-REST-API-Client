@@ -59,7 +59,7 @@ const ProductsFilterPanel = (props) => {
       isAndNeeded = true;
     }
 
-    if(fields["category"] != 0) {
+    if(fields["category"] !== '0') {
       if(isAndNeeded)
         gridifyQueryBuilder.setFilterAnd();
       gridifyQueryBuilder.setFilterEquals("categoryId", fields["category"]);

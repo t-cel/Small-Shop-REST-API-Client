@@ -56,14 +56,11 @@ const OrdersList = (props) => {
   const [categories, setCategories] = useState([]);
   const [anyItemModified, setAnyItemModified] = useState(false);
 
-  let filterBusEvent = undefined;
-
   const confirmChanges = async () => {
     const _items = [...items];
 
     for(let i in _items) {
       if(_items[i].modified) {
-        console.log("modified item: ", i);
         const updatedItem = {
           id: _items[i].id,
           buyerId: _items[i].buyerId,
@@ -81,7 +78,7 @@ const OrdersList = (props) => {
   }
 
   useEffect(() => {
-    filterBusEvent = EventBus.on("applyFilterToOrdersList", async (query) => await loadItems(query));
+    const filterBusEvent = EventBus.on("applyFilterToOrdersList", async (query) => await loadItems(query));
 
     (async () => await loadItems(""))();
 
@@ -131,7 +128,7 @@ const OrdersList = (props) => {
 
   const handleChange = (target, orderId) => {
     const _items = [...items];
-    const order = _items[_items.findIndex(item => item.id == orderId)];
+    const order = _items[_items.findIndex(item => item.id === orderId)];
     order.modified = true;
     order[target.id] = target.value;
     setItems(_items);

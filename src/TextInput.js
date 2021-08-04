@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 export const TextInput = (props) => {
   return (
     <div style={{width: "100%"}}>

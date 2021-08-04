@@ -40,7 +40,7 @@ export function FormValidator() {
   ];
 
   this.validate = function(fieldsConstraints, fields, errors) {
-    if(fields.length != fieldsConstraints.length)
+    if(fields.length !== fieldsConstraints.length)
       throw new Error("Count of fields to validate must be equal to validation rules count");
 
     let formIsValid = true;
