@@ -1,5 +1,3 @@
-// esupplier@mail.com esupplier
-
 if(!localStorage.getItem("userCredidentials")) {
   localStorage.setItem("userCredidentials", JSON.stringify({ email: "", password: "" }));
 }
@@ -17,6 +15,8 @@ const createHeaders = () => { return {
   'Accept': 'application/json'
 }}
 
+export const APIRespondError = "APIFailure";
+
 const fetchedCorrectly = (res) => res.status >= 200 && res.status < 300;
 
 async function fetchDataFromAPI(url, init) {
@@ -30,8 +30,7 @@ async function fetchDataFromAPI(url, init) {
     } else {
       return new Error(`Error on fetching data from API, error code: ${res.status}`);  
     }
-  })
-  .catch((error) => console.error("There was an error: ", error));
+  }).catch(e => APIRespondError);
 }
 
 // CATEGORIES
@@ -153,6 +152,11 @@ export function setCredidentials(login, password) {
 
 export function logOff() {
   localStorage.setItem("userCredidentials", JSON.stringify({ email: "", password: ""}));
+}
+
+export function wasLoggedIn() {
+  const userAuth = JSON.parse(localStorage.getItem("userCredidentials"));
+  return userAuth.email != null && userAuth.password != null;
 }
 
 // ORDERS

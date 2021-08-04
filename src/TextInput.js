@@ -6,7 +6,7 @@ export const TextInput = (props) => {
       <label htmlFor={props.id}>{props.text}</label>
       <input 
         className="form-control" 
-        type="text" 
+        type={props.password ? "password" : "text"} 
         onChange={props.handleChange} 
         id={props.id}
         placeholder={props.placeholder}

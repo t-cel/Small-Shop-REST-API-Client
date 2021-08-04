@@ -5,3 +5,4 @@ export { OrderSelectInput } from './OrderSelectInput';
 export { CategorySelectInput } from './CategorySelectInput';
 export { OrderStatusQuerySelectInput } from './OrderStatusQuerySelectInput';
 export { OrderFilterSortBySelectInput } from './OrderFilterSortBySelectInput';
+export { LogInButton } from './LogInButton';

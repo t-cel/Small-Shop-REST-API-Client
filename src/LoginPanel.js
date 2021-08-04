@@ -2,35 +2,51 @@ import React, { useEffect, useState } from 'react';
 import { Route, withRouter } from 'react-router-dom';
 import ShopPanelLogo from './ShopPanelLogo';
 
-import { getUser, setCredidentials } from './api'
+import { LogInButton } from './Inputs';
+
+import { APIRespondError, getUser, setCredidentials } from './api'
+import { TextInput } from './TextInput';
 
 const LoginPanel = (props) => {
     
-    const [fields, setFields] = useState({ email: "", password: "" });
-    const [error, setError] = useState();
+    const [ fields, setFields ] = useState({ email: "", password: "" });
+    const [ error, setError ] = useState();
+    const [ waiting, setWaiting ] = useState(false);
 
-    function handleChange({target}) {
+    const handleChange = ({target}) => {
         const _fields = fields;
         _fields[target.id] = target.value;
         setFields(_fields);
     }
 
-    async function onLogInBtnClick() {
+    const onLogInBtnClick = async () => {
+        setWaiting(true);
+
         const { email, password } = fields;
         setCredidentials(email, password);
         const user = await getUser();
+
         if(user instanceof Error) {
             setError("Wrong email or password");
+        } else if (user === APIRespondError) {
+            setError("API does not respond");
         } else {
+            props.history.push('/products');
+        }
+
+        setWaiting(false);
+    }
+
+    const checkIfUserAlreadyLoggedIn = async () => {
+        const user = await getUser();
+    
+        if(!(user instanceof Error) && user !== APIRespondError) {
             props.history.push('/products');
         }
     }
 
-    useEffect(async () => {
-        const user = await getUser();
-        if(!(user instanceof Error)) {
-            props.history.push('/products');
-        }    
+    useEffect(() => {
+        checkIfUserAlreadyLoggedIn();
     })
 
     return (
@@ -41,33 +57,17 @@ const LoginPanel = (props) => {
             <hr></hr>
             <div className="form-row">
                 <div className="form-group col">
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        className="form-control" 
-                        type="text" 
-                        onChange={handleChange} 
-                        id="email"
-                        placeholder="Email" 
-                    >
-                    </input>
+                    <TextInput id="email" text="Email" handleChange={handleChange} placeholder="Email"/>
                 </div>
             </div>
             <div className="form-row">
                 <div className="form-group col">
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        className="form-control" 
-                        type="password" 
-                        onChange={handleChange} 
-                        id="password"
-                        placeholder="Password" 
-                    >
-                    </input>
+                    <TextInput id="password" text="Password" handleChange={handleChange} placeholder="Password" password/>
                 </div>
             </div>
             <div className="form-row">
                 <div className="form-group col">
-                    <button className="btn btn-primary" onClick={onLogInBtnClick}>Log In</button>
+                    <LogInButton waiting={waiting} onLogInBtnClick={onLogInBtnClick}/>
                     <div className="text-danger mt-2">{error}</div>
                 </div>
             </div>

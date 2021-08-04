@@ -1,10 +1,8 @@
 import './App.css';
 import './api'
-import React, { isValidElement, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-//import { Button, Navbar, Nav, Container, ListGroup, Row, Col } from 'react-bootstrap';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect, useHistory, withRouter, useLocation } from "react-router-dom";
-
 import { useIdleTimer } from 'react-idle-timer';
 
 import OrdersList from './OrdersList';
@@ -17,14 +15,16 @@ import ProductsFilterPanel from './ProductsFilterPanel';
 import OrdersFilterPanel from './OrdersFilterPanel';
 import LoginPanel from './LoginPanel';
 
-import { getUser, logOff } from './api';
+import { APIRespondError, getUser, logOff, wasLoggedIn } from './api';
 
 const AppSession = (props) => {
-
+  
   const [ ready, setReady ] = useState(false);
   const [ wasIdle, setWasIdle ] = useState(false);
   const history = useHistory();
   const location = useLocation();
+  
+  const isOnLoginPage = () => location.pathname == "/login";
 
   // log off automatically after some time of idle
   const handleOnIdle = event => {
@@ -39,6 +39,12 @@ const AppSession = (props) => {
     if(wasIdle) {
       history.push("/login");
       setWasIdle(false);
+    } else {
+      const user = await getUser();
+      if(user === APIRespondError && !isOnLoginPage()) {
+        alert("API does not respond");
+        history.push("/login");
+      }
     }
   }
 
@@ -52,11 +58,11 @@ const AppSession = (props) => {
   });
 
   const checkUser = async () => {
-    const user = await getUser();
-    if(user instanceof Error) {
-      history.push("/login");
-    }
-    setReady(true);
+      const user = await getUser();
+      if(user instanceof Error) {
+        history.push("/login");
+      }
+      setReady(true);
   }
 
   //on start/refresh, check if user is logged in
@@ -68,7 +74,7 @@ const AppSession = (props) => {
   //on location change check if user was idle, if yes, redirect to login page
   useEffect(() => {
     setReady(false);
-    if(wasIdle) {
+    if(location.pathname !== "/login" && (wasIdle || !wasLoggedIn())) {
       history.push("/login");
       setWasIdle(false);
     }
@@ -92,7 +98,7 @@ const AppSession = (props) => {
     <div className="App">
         <Switch>
             <Route exact path="/">
-              <LoginPanel/>  
+              <Redirect to="/login"/>
             </Route>
 
             <Route path="/login">
