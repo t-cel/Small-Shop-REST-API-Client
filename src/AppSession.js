@@ -1,9 +1,11 @@
 import './App.css';
 import './api'
-import React, { useEffect, useState } from 'react';
+import React, { isValidElement, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 //import { Button, Navbar, Nav, Container, ListGroup, Row, Col } from 'react-bootstrap';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect, useHistory, withRouter } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link, Redirect, useHistory, withRouter, useLocation } from "react-router-dom";
+
+import { useIdleTimer } from 'react-idle-timer';
 
 import OrdersList from './OrdersList';
 import ProductsList from './ProductsList';
@@ -15,73 +17,116 @@ import ProductsFilterPanel from './ProductsFilterPanel';
 import OrdersFilterPanel from './OrdersFilterPanel';
 import LoginPanel from './LoginPanel';
 
-import { getUser } from './api';
+import { getUser, logOff } from './api';
 
 const AppSession = (props) => {
 
-  const [ ok, setOk ] = useState(false);
+  const [ ready, setReady ] = useState(false);
+  const [ wasIdle, setWasIdle ] = useState(false);
   const history = useHistory();
+  const location = useLocation();
+
+  // log off automatically after some time of idle
+  const handleOnIdle = event => {
+    setWasIdle(true);
+    logOff();
+  }
+
+  const handleOnActive = event => {}
+
+  // if user makes some action but was idle, redirect to login page
+  const handleOnAction = async event => {
+    if(wasIdle) {
+      history.push("/login");
+      setWasIdle(false);
+    }
+  }
+
+  useIdleTimer({
+    timeout: 1000 * 60 * 20, //20 minutes of idle results in auto log off
+    onIdle: handleOnIdle,
+    onActive: handleOnActive,
+    onAction: handleOnAction,
+    debounce: 500,
+    events: [ 'mouseup' ]
+  });
 
   const checkUser = async () => {
     const user = await getUser();
-
     if(user instanceof Error) {
       history.push("/login");
     }
+    setReady(true);
+  }
 
-    setOk(true);
-}
-
-useEffect(() => {
-    console.log("update");
-    setOk(false);
+  //on start/refresh, check if user is logged in
+  useEffect(() => {
+    setReady(false);
     checkUser();
-  }, []);
+  }, [history]);
 
-  if(!ok) {
+  //on location change check if user was idle, if yes, redirect to login page
+  useEffect(() => {
+    setReady(false);
+    if(wasIdle) {
+      history.push("/login");
+      setWasIdle(false);
+    }
+    setReady(true);
+  }, [location]);
+
+  if(!ready) {
     return (
-      <div className="App">Loading...</div>
+      <div className="App">
+        <div className="container mt-5">
+          <div className="text-center">
+            <div className="spinner-border" style={{width: "4rem", height: "4rem"}} role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   } else {
     return (
     <div className="App">
         <Switch>
             <Route exact path="/">
-
+              <LoginPanel/>  
             </Route>
 
             <Route path="/login">
-            <LoginPanel/>
+              <LoginPanel/>
             </Route>
 
             <Route path="/products/new">
-            <ShopPanelHeader/>     
-            <NewProductForm/>     
+              <ShopPanelHeader/>     
+              <NewProductForm/>     
             </Route>
 
             <Route path="/products/:id">
-            <ShopPanelHeader/>   
-            <ListSwitcher/>  
-            <ProductsList/>    
+              <ShopPanelHeader/>   
+              <ListSwitcher/>  
+              <ProductsList/>    
             </Route>  
 
             <Route path="/products">
-            <ShopPanelHeader/>
-            <ListSwitcher/>
-            <ProductsFilterPanel/>
-            <ProductsList/>
+              <ShopPanelHeader/>
+              <ListSwitcher/>
+              <ProductsFilterPanel/>
+              <ProductsList/>
             </Route>
 
             <Route path="/orders/new">
-            <ShopPanelHeader/> 
-            <NewOrderForm/>
+              <ShopPanelHeader/> 
+              <NewOrderForm/>
             </Route>
 
             <Route path="/orders">
-            <ShopPanelHeader/>
-            <ListSwitcher/>
-            <OrdersFilterPanel/>
-            <OrdersList/>
+              <ShopPanelHeader/>
+              <ListSwitcher/>
+              <OrdersFilterPanel/>
+              <OrdersList/>
             </Route>
 
         </Switch>

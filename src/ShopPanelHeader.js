@@ -3,7 +3,7 @@ import ShopPanelLogo from './ShopPanelLogo';
 
 import { Link } from 'react-router-dom';
 
-import { getUser } from './api';
+import { getUser, logOff } from './api';
 
 const ShopPanelHeader = () => {
   const [user, setUser] = useState();
@@ -16,10 +16,6 @@ const ShopPanelHeader = () => {
     }
     fetchUser();
   }, []);
-
-  const logOff = () => {
-    localStorage.setItem("userCredidentials", JSON.stringify({ email: "", password: ""}));
-  }
 
   return (
     <div className="container py-2">

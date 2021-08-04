@@ -1,7 +1,8 @@
 // esupplier@mail.com esupplier
 
-if(!localStorage.getItem("userCredidentials"))
+if(!localStorage.getItem("userCredidentials")) {
   localStorage.setItem("userCredidentials", JSON.stringify({ email: "", password: "" }));
+}
 
 const getAuthHeader = () => {
   const userCredidentials = JSON.parse(localStorage.getItem("userCredidentials"));
@@ -30,7 +31,7 @@ async function fetchDataFromAPI(url, init) {
       return new Error(`Error on fetching data from API, error code: ${res.status}`);  
     }
   })
-  .catch((error) => console.error(error));
+  .catch((error) => console.error("There was an error: ", error));
 }
 
 // CATEGORIES
@@ -148,6 +149,10 @@ export function setCredidentials(login, password) {
   }
 
   localStorage.setItem("userCredidentials", JSON.stringify(userCredidentials));
+}
+
+export function logOff() {
+  localStorage.setItem("userCredidentials", JSON.stringify({ email: "", password: ""}));
 }
 
 // ORDERS
