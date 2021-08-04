@@ -9,7 +9,6 @@ import {
   OrderFilterSortBySelectInput,
   OrderSelectInput,
 } from './Inputs';
-import { CategorySelectInput } from './CategorySelectInput';
 
 const OrdersFilterPanel = (props) => {
   const [fields, setFields] = useState({ category: "0", orderStatus: "-1", sortBy: "orderStatus", isSortAsc: true});

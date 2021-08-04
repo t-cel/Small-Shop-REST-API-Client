@@ -2,7 +2,7 @@ import './App.css';
 import './api'
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect, useHistory, withRouter, useLocation } from "react-router-dom";
+import { Switch, Route, Redirect, useHistory, withRouter, useLocation } from "react-router-dom";
 import { useIdleTimer } from 'react-idle-timer';
 
 import OrdersList from './OrdersList';
@@ -14,6 +14,7 @@ import ListSwitcher from './ListSwitcher';
 import ProductsFilterPanel from './ProductsFilterPanel';
 import OrdersFilterPanel from './OrdersFilterPanel';
 import LoginPanel from './LoginPanel';
+import { LoadingSpinner } from './LoadingSpinner';
 
 import { APIRespondError, getUser, logOff, wasLoggedIn } from './api';
 
@@ -85,11 +86,7 @@ const AppSession = (props) => {
     return (
       <div className="App">
         <div className="container mt-5">
-          <div className="text-center">
-            <div className="spinner-border" style={{width: "4rem", height: "4rem"}} role="status">
-              <span className="sr-only">Loading...</span>
-            </div>
-          </div>
+          <LoadingSpinner/>
         </div>
       </div>
     );

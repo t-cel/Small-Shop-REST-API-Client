@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Route, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import ShopPanelLogo from './ShopPanelLogo';
 
 import { LogInButton } from './Inputs';
 
 import { APIRespondError, getUser, setCredidentials } from './api'
-import { TextInput } from './TextInput';
+import { TextInput } from './Inputs';
 
 const LoginPanel = (props) => {
     

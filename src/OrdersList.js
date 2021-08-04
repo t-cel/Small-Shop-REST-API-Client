@@ -9,6 +9,7 @@ import {
 } from './api';
 
 import { Link, withRouter } from 'react-router-dom';
+import { LoadingSpinner } from './LoadingSpinner';
 
 import OperationButtons from './OperationButtons';
 import EventBus from 'eventing-bus';
@@ -143,11 +144,7 @@ const OrdersList = (props) => {
   else if(!loaded) {
     return (
       <div className="container mt-5">
-        <div className="text-center">
-          <div className="spinner-border" style={{width: "4rem", height: "4rem"}} role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
+        <LoadingSpinner />
       </div>
     ); 
   } else {

@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-
-import { 
-    createOrder,
-    createProduct
-} from './api';
-
 import { Link } from 'react-router-dom';
+import { createOrder } from './api';
 import { FormValidator, ValidationConstraintBuilder } from './FormValidator';
 import { TextInput } from './Inputs';
 

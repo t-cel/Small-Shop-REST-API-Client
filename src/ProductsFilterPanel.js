@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import GridifyQueryBuilder from './GridifyQueryBuilder';
 import EventBus from 'eventing-bus';
 import { FormValidator, ValidationConstraintBuilder } from './FormValidator';
-import { buildQueries } from '@testing-library/react';
 import { 
   TextInput, 
   CategoryQuerySelectInput, 

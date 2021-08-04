@@ -16,6 +16,7 @@ import { useParams, withRouter } from 'react-router';
 import GridifyQueryBuilder from './GridifyQueryBuilder';
 
 import { TextInput, CategorySelectInput } from './Inputs';
+import { LoadingSpinner } from './LoadingSpinner';
 
 const ProductListItem = (props) => {
   const [readonly, setReadonly] = useState(false);
@@ -207,11 +208,7 @@ const ProductsList = (props) => {
   {
     return (
       <div className="container mt-5">
-        <div className="text-center">
-          <div className="spinner-border" style={{width: "4rem", height: "4rem"}} role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
+        <LoadingSpinner />
       </div>
     ); 
   }

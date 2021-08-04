@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from 'react';
-
 export const LogInButton = (props) => {
     if(props.waiting) {
         return (
