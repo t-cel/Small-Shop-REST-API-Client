@@ -15,11 +15,11 @@ In project directory:
     npm start
 This should start new browser tab at http://localhost:3000
 
-![](github/2.png)
-![](github/3.png)
-![](github/4.png)
-![](github/5.png)
-![](github/6.png)
+# Screenshots
+
+![](github/3.png) 
+
+![](github/4.png) 
 
 # Third party:
 - [react-idle-timer](https://github.com/SupremeTechnopriest/react-idle-timer) for logging off inactive user
