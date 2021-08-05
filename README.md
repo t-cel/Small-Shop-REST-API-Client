@@ -18,7 +18,8 @@ This should start new browser tab at http://localhost:3000
 # Screenshots
 
 ![](github/3.png) 
-
+___
+![](github/4.png) 
 ___
 # Third party:
 - [react-idle-timer](https://github.com/SupremeTechnopriest/react-idle-timer) for logging off inactive user
