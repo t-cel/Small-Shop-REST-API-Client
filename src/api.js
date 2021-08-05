@@ -52,7 +52,7 @@ async function fetchDataFromAPI(url, init) {
     } else {
       throw new Error(`Error on fetching data from API, error code: ${res.status}`);  
     }
-  }).catch(e => APIRespondError);
+  }).catch(e => { throw new Error(APIRespondError)});
 }
 
 // CATEGORIES

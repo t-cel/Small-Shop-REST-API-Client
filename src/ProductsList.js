@@ -78,7 +78,7 @@ const ProductListItem = (props) => {
 }
 
 const ProductsList = (props) => {
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -88,6 +88,8 @@ const ProductsList = (props) => {
 
   const confirmChanges = async () => {
     let _items = [...items];
+    let _error = "";
+    const wasError = () => _error.length > 0;
 
     for(let i in _items) {
       if(_items[i].modified) {
@@ -105,7 +107,10 @@ const ProductsList = (props) => {
           isNaN(updatedItem.price) || isNaN(updatedItem.count)) {
           setItemModificationError(true);
         } else {
-          await updateProduct(updatedItem.id, updatedItem);
+          await updateProduct(updatedItem.id, updatedItem).catch(e => {
+            _error = "There was an error during products update"; 
+          });
+          if(wasError()) { alert(_error); return; }
           setItemModificationError(false);
         }
       }
@@ -137,34 +142,33 @@ const ProductsList = (props) => {
 
   const loadItems = async (query) => {
     setLoaded(false);
-    setError(false);
+    setError("");
+    let _error = "";
+    const wasError = () => _error.length > 0;
 
-    const categoriesData = await getCategories();
-    if (!categoriesData) {
-      setError(true);
-      return;
-    }
+    const categoriesData = await getCategories().catch(e => { 
+      _error = "There was an error during categories fetch"; 
+    });
+    if(wasError()) { setError(_error); return; }
 
-    const productsData = await getProducts(query);
-    if(!productsData) {
-      setError(true);
-      return;
-    }
+    const productsData = await getProducts(query).catch(e => { 
+      _error = "There was an error during products fetch"; 
+    });
+    if(wasError()) { setError(_error); return; }
 
     for(let i in productsData) {
       productsData[i].modified = false;
-      const productImages = await getProductImages(productsData[i].id);
-      if(!productImages) {
-        setError(true);
-        return;
-      }
+      const productImages = 
+        await getProductImages(productsData[i].id).catch(e => { 
+          _error = "There was an error during product images fetch, product id: " + productsData[i].id;
+        });
+      if(wasError()) { setError(_error); return; }
 
       if(productImages.length > 0) {
-        const image = await getImage(productImages[0].imageURL);
-        if(!image) {
-          setError(true);
-          return;
-        }
+        const image = await getImage(productImages[0].imageURL).catch(e => { 
+          _error = "There was an error when downloading product image, product id: " + productsData[i].id;
+        });
+        if(wasError()) { setError(_error); return; }
 
         //create url and save it to our fetched product
         var file = window.URL.createObjectURL(image);
@@ -179,9 +183,13 @@ const ProductsList = (props) => {
 
   const onItemRemove = async (productId) => {
     if (window.confirm('Do you really want to remove this product?')) {
+      let _error = "";
+      const wasError = () => _error.length > 0;
       const _items = [...items];
-      _items.splice(_items.indexOf(products => products.id === productId), 1);
-      await deleteProduct(productId);
+
+      _items.splice(_items.findIndex(products => products.id === productId), 1);
+      await deleteProduct(productId).catch(e => _error = "There was an error during removing product");
+      if(wasError()) { alert(_error); return; }
       setItems(_items);
     } 
   }
@@ -195,10 +203,10 @@ const ProductsList = (props) => {
     setAnyItemModified(true);
   }
 
-  if(error) {
+  if(error.length > 0) {
     return (
       <div className="container">
-        <div>There was an error when loading products</div>
+        <div>{error}</div>
       </div>
     );
   }

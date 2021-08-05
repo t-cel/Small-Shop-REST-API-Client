@@ -41,11 +41,15 @@ const AppSession = (props) => {
       history.push("/login");
       setWasIdle(false);
     } else {
-      const user = await getUser();
-      if(user === APIRespondError && !isOnLoginPage()) {
-        alert("API does not respond");
-        history.push("/login");
-      }
+      await getUser().catch(e => {
+        console.log(e.message);
+        if(e.message === APIRespondError) {
+          if(!isOnLoginPage()) {
+            alert("API does not respond");
+            history.push("/login");
+          }
+        }
+      });
     }
   }
 
@@ -59,10 +63,9 @@ const AppSession = (props) => {
   });
 
   const checkUser = async () => {
-      const user = await getUser();
-      if(user instanceof Error) {
+      await getUser().catch(e => {
         history.push("/login");
-      }
+      });
       setReady(true);
   }
 

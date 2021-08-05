@@ -41,14 +41,13 @@ const NewOrderForm = (props) => {
                 orderStatus: 0,
                 productId: fields["productId"],
             };
-
-            const resultOrder = await createOrder(order);
-            if(resultOrder instanceof Error) {
-                const _errors = [];
-                _errors["post"] = "Wrong id or count exceeds available products count";
-                setErrors(_errors);
-                return;
-            }
+            
+            // not work
+            const _errors = [];
+            await createOrder(order).catch(e => {
+                _errors["post"] = "There was an error when creating product. It may be wrong product id or count exceeds available products count";
+            });
+            if(_errors["post"]) { setErrors(_errors); return; }
 
             window.location.href = window.location.href.substr(0, window.location.href.lastIndexOf("/"));
         }

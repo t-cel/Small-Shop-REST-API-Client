@@ -21,7 +21,7 @@ const toBase64 = file => new Promise((resolve, reject) => {
 const NewProductForm = (props) => {
     const [fields, setFields] = useState({ categoryId: 1 });
     const [errors, setErrors] = useState({ name: "", price: "", count: "" });
-    const [picture, setPicture] = useState({});
+    const [picture, setPicture] = useState(null);
     const [categories, setCategories] = useState([]);
 
     const handleChange = ({target}) => {
@@ -48,6 +48,9 @@ const NewProductForm = (props) => {
 
     const onAddBtnClick = async () => {
         if (validateForm()) {
+            let _error = "";
+            const wasError = () => _error.length > 0;
+
             // create product
             const product = {
                 name: fields["name"],
@@ -55,23 +58,33 @@ const NewProductForm = (props) => {
                 count: parseInt(fields["count"]),
                 categoryId: fields["categoryId"]
             };
-            const resultProduct = await createProduct(product);
+            const resultProduct = await createProduct(product).catch(e => {
+                _error = "There was an error when creating product";
+            });
+            if(wasError()) { alert(_error); return; }
 
-            //upload image
-            const image64 = await toBase64(picture).catch(e => Error(e));
-            if(image64 instanceof Error) {
-                console.error(`There was an error during image convert: ${image64.message}`);
-            } else {
+            if(picture) {
+                //upload image
+                const image64 = await toBase64(picture).catch(e => {
+                    _error = "There was an error during image conversion";
+                });
+                if(wasError()) { alert(_error); return; }
+
                 const image = {
                     file: image64.split("base64,")[1], //skip data:image part
                     extension: picture.name.substr(picture.name.lastIndexOf(".")+1)
                 };
 
-                const uploadResult = await uploadImage(image);
-                if(!uploadResult) return;
+                const uploadResult = await uploadImage(image).catch(e => {
+                    _error = "There was an error during image upload";
+                });
+                if(wasError()) { alert(_error); return; }
 
                 //add image to product
-                await addProductImage(resultProduct.id, uploadResult);
+                await addProductImage(resultProduct.id, uploadResult).catch(e => {
+                    _error = "There was an error during adding image to product";
+                });
+                if(wasError()) { alert(_error); return; }
             }
 
             window.location.href = window.location.href.substr(0, window.location.href.lastIndexOf("/"));
@@ -84,9 +97,13 @@ const NewProductForm = (props) => {
 
     useEffect(() => {
         async function loadCategories() {
-            const _categories = await getCategories();
-            if(!_categories)
-                return;
+            let _error = "";
+            const wasError = () => _error.length > 0;
+
+            const _categories = await getCategories().then(r => { throw new Error() }).catch(e => { 
+                _error = "There was an error during categories fetch"; 
+            });
+            if(wasError()) { alert(_error); return; }
             setCategories(_categories);
         }
 

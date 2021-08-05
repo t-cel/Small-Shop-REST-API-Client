@@ -10,8 +10,12 @@ const ShopPanelHeader = () => {
   
   useEffect(() => {
     async function fetchUser() {
-      const user = await getUser();
-      if(user)
+      let _error = false;
+      const user = await getUser().catch(e => {
+        alert("There was an error during user data fetch");
+        _error = true;
+      });
+      if(!_error)
         setUser(user);
     }
     fetchUser();

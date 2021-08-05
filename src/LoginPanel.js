@@ -24,25 +24,25 @@ const LoginPanel = (props) => {
 
         const { email, password } = fields;
         setCredidentials(email, password);
-        const user = await getUser();
-
-        if(user instanceof Error) {
-            setError("Wrong email or password");
-        } else if (user === APIRespondError) {
-            setError("API does not respond");
-        } else {
+        
+        await getUser().then(r => {
             props.history.push('/products');
-        }
+        }).catch(e => {
+            if(e.message === APIRespondError) {
+                setError("API does not respond");
+            } else {
+                setError("Wrong email or password");
+            }
+        });
 
         setWaiting(false);
     }
 
     const checkIfUserAlreadyLoggedIn = async () => {
-        const user = await getUser();
-    
-        if(!(user instanceof Error) && user !== APIRespondError) {
+        await getUser().then(r => {
             props.history.push('/products');
-        }
+        }).catch(e => {});
+    
     }
 
     useEffect(() => {
